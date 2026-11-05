@@ -1,4 +1,4 @@
-"""Windsor Nido dummy fixing plate -> DXF.
+"""Windsor Nido 8423 Verge Longplate Dummy Set -> DXF (plate + LH/RH door layouts).
 
 Usage:
     pip install ezdxf
