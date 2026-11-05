@@ -18,14 +18,14 @@ Layers:
     RECESS        outline + clearance with sharp notch shoulders; cut this with
                   the tool INSIDE (pocket/recess the plate drops into), any tool size
     HOLES         screw hole circles
-    PLATE_PILOT_CENTRES  POINT at the centre of each screw hole (pilot drilling)
+    PLATE_PILOT_CENTRES  Ø3 circle centred on each screw hole (pilot drilling)
     REFERENCE     hub ring and spindle centre cross, not for cutting
 
 Also writes door-face layouts Nido-Dummy-Door-LH.dxf / -RH.dxf (spindle at the
 origin, backplate vertical, +Y up): RECESS rotated so the notch points away from
-the lever, POINTs for the two backplate screws (65 above, 137 below the spindle;
+the lever, Ø3 pilot circles for the two backplate screws (65 above, 137 below the spindle;
 measured off a ruler photo; PILOT_CENTRES), the round plate's three screws
-(PLATE_PILOT_CENTRES) and the spindle centre. LH = hinges on the left,
+(PLATE_PILOT_CENTRES) and a cross at the spindle centre (SPINDLE_CENTRE). LH = hinges on the left,
 lever pointing left, as seen from the face being machined.
 """
 import argparse
@@ -48,6 +48,7 @@ HOLE_D = 3.8
 HOLE_PCD = 23.1
 HOLE_ANGLES = (30.0, 150.0, 270.0)
 BOSS_D = 12.4       # raised hub ring (reference only)
+PILOT_D = 3.0       # pilot holes are drawn as circles this size; Maestro ignores DXF POINTs
 
 # ---- derived geometry ----
 xf = W_FLATS / 2
@@ -155,8 +156,6 @@ def build(out, clearance=0.2):
     doc = ezdxf.new("R2000", setup=True)
     doc.units = ezdxf.units.MM
     doc.header["$MEASUREMENT"] = 1
-    doc.header["$PDMODE"] = 3     # show points as an X
-    doc.header["$PDSIZE"] = 0.8   # point marker size, mm
     doc.layers.add("OUTLINE", color=7)
     doc.layers.add("RECESS", color=4)
     doc.layers.add("HOLES", color=1)
@@ -170,7 +169,7 @@ def build(out, clearance=0.2):
                        close=True, dxfattribs={"layer": "RECESS"})
     for c in holes:
         msp.add_circle(c, HOLE_D / 2, dxfattribs={"layer": "HOLES"})
-        msp.add_point(c, dxfattribs={"layer": "PLATE_PILOT_CENTRES"})
+        msp.add_circle(c, PILOT_D / 2, dxfattribs={"layer": "PLATE_PILOT_CENTRES"})
     msp.add_circle((0, 0), BOSS_D / 2, dxfattribs={"layer": "REFERENCE"})
     msp.add_line((-2, 0), (2, 0), dxfattribs={"layer": "REFERENCE"})
     msp.add_line((0, -2), (0, 2), dxfattribs={"layer": "REFERENCE"})
@@ -198,8 +197,6 @@ def build_door(out, hand, clearance=0.2):
     doc = ezdxf.new("R2000", setup=True)
     doc.units = ezdxf.units.MM
     doc.header["$MEASUREMENT"] = 1
-    doc.header["$PDMODE"] = 3
-    doc.header["$PDSIZE"] = 2.0
     doc.layers.add("RECESS", color=4)
     doc.layers.add("PILOT_CENTRES", color=3)
     doc.layers.add("PLATE_PILOT_CENTRES", color=2)
@@ -210,11 +207,12 @@ def build_door(out, hand, clearance=0.2):
                        close=True, dxfattribs={"layer": "RECESS"})
     pilots = [(0.0, PILOT_NEAR), (0.0, PILOT_NEAR - PILOT_SPACING)]
     for p in pilots:
-        msp.add_point(p, dxfattribs={"layer": "PILOT_CENTRES"})
+        msp.add_circle(p, PILOT_D / 2, dxfattribs={"layer": "PILOT_CENTRES"})
     plate_pilots = [(round(x, 6) + 0.0, round(y, 6) + 0.0) for x, y, _ in rotate([(hx, hy, 0) for hx, hy in holes], turn)]
     for p in plate_pilots:
-        msp.add_point(p, dxfattribs={"layer": "PLATE_PILOT_CENTRES"})
-    msp.add_point((0, 0), dxfattribs={"layer": "SPINDLE_CENTRE"})
+        msp.add_circle(p, PILOT_D / 2, dxfattribs={"layer": "PLATE_PILOT_CENTRES"})
+    msp.add_line((-3, 0), (3, 0), dxfattribs={"layer": "SPINDLE_CENTRE"})
+    msp.add_line((0, -3), (0, 3), dxfattribs={"layer": "SPINDLE_CENTRE"})
     msp.add_lwpolyline(rotate(outline, turn), format="xyb", close=True,
                        dxfattribs={"layer": "REFERENCE"})  # true plate outline, not for cutting
     msp.add_line((0, pilots[1][1]), (0, pilots[0][1]), dxfattribs={"layer": "REFERENCE"})
