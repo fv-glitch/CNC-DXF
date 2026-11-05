@@ -2,7 +2,7 @@
 
 Usage:
     pip install ezdxf opencv-python-headless numpy pillow scipy scikit-image
-    python Dickbutt.py [output.dxf] [--width MM]
+    python Dickbutt.py [output.dxf] [--width MM] [--explode] [--tol MM]
 
 Scaled so the artwork is --width mm wide (default 200); rescale freely in CAM.
 Origin at the bottom-left of the artwork (the border extends a little past it).
@@ -27,21 +27,26 @@ SRC = HERE / "Dickbutt-source.webp"
 BORDER_PX = 20.0  # sticker edge sits ~20 source px outside the artwork
 
 
-def build(out, width_mm):
+def build(out, width_mm, explode=False, tol_mm=None):
     ink = lt.ink_mask(SRC)
     loops = lt.outlines(ink)
     paths, fills, hw = lt.centrelines(ink)
     edge = lt.border(ink, BORDER_PX)
-    s, W, H = lt.write_dxf(out, ink.shape[0], width_mm, loops, paths, fills, edge)
+    s, W, H = lt.write_dxf(out, ink.shape[0], width_mm, loops, paths, fills, edge,
+                           explode=explode, tol_mm=tol_mm)
     return loops, paths, fills, 2 * hw * s, BORDER_PX * s, W, H
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("out", nargs="?", default=str(HERE / "Dickbutt.dxf"))
+    ap.add_argument("--explode", action="store_true",
+                    help="write separate LINE/ARC entities instead of polylines")
+    ap.add_argument("--tol", type=float, default=None,
+                    help="max deviation from the traced curve in mm (default 0.3 source px)")
     ap.add_argument("--width", type=float, default=200.0, help="artwork width in mm")
     args = ap.parse_args()
-    loops, paths, fills, stroke, off, W, H = build(args.out, args.width)
+    loops, paths, fills, stroke, off, W, H = build(args.out, args.width, args.explode, args.tol)
     holes = sum(h for _, h in loops)
     print(f"wrote {args.out}: {W:.1f} x {H:.1f} mm, stroke ~{stroke:.2f} mm, border offset {off:.1f} mm")
     print(f"  outline: {len(loops) - holes} outside + {holes} inside loops")
