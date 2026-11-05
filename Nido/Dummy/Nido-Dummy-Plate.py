@@ -23,7 +23,7 @@ Layers:
 
 Also writes door-face layouts Nido-Dummy-Door-LH.dxf / -RH.dxf (spindle at the
 origin, backplate vertical, +Y up): RECESS rotated so the notch points away from
-the lever, POINTs for the two backplate screws (65 above, 137 below the spindle;
+the lever, POINTs for the two backplate screws (65 above, 135 below the spindle;
 measured off a ruler photo; PILOT_CENTRES), the round plate's three screws
 (PLATE_PILOT_CENTRES) and the spindle centre. LH = hinges on the left,
 lever pointing left, as seen from the face being machined.
@@ -179,7 +179,7 @@ def build(out, clearance=0.2):
 
 # ---- long backplate, as fitted on the door (measured off a ruler photo) ----
 PILOT_NEAR = 65.0    # spindle centre -> nearer backplate screw (fitted ABOVE the spindle)
-PILOT_SPACING = 202.0  # backplate screw centre -> centre; the other is 137 below the spindle
+PILOT_SPACING = 200.0  # backplate screw centre -> centre (202 off the photo drilled ~2 mm long; checked on a test door)
 
 
 def rotate(v, deg):
