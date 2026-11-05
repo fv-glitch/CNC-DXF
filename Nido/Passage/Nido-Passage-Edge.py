@@ -10,14 +10,14 @@ Y as Nido-Passage-Door.dxf). The latch is symmetric, so one file suits LH and RH
 
 Latch 1172: 57 mm backset (spindle centre is 57 in from this edge), 77 mm case.
 Faceplate measured with calipers: 60.14 x 25.30, screws ~45 apart on its centreline.
-Edge bore Ø26 (bore at least the 77 mm case deep).
+Edge bore Ø25 (Windsor spec; Ø26 would show past the 25.30 faceplate), at least the 77 mm case deep.
 
 Layers:
     FACEPLATE_MORTISE  faceplate outline + clearance, R`corner` corners; cut with
                        the tool INSIDE (R2 suits bits up to Ø4)
     FACEPLATE_SCREWS   POINTs for the two faceplate screw pilots
-    BORE_CENTRE        POINT at the Ø26 latch bore centre
-    REFERENCE          Ø26 bore circle and the bare faceplate outline, not for cutting
+    BORE_CENTRE        POINT at the Ø25 latch bore centre
+    REFERENCE          Ø25 bore circle and the bare faceplate outline, not for cutting
 """
 import argparse
 import math
@@ -28,7 +28,7 @@ import ezdxf
 FP_LENGTH = 60.14    # faceplate, along the door height
 FP_WIDTH = 25.30     # faceplate, across the door thickness
 FP_SCREWS = 45.0     # faceplate screw centres
-BORE_D = 26.0
+BORE_D = 25.0       # Windsor 1172 spec drill-out; must stay narrower than the 25.30 faceplate
 BACKSET = 57.0
 
 

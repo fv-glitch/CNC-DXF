@@ -18,7 +18,7 @@ viewed from the face being machined. Pilot/hole positions are POINTs (Maestro im
 
 ## 8427 Passage
 - Face: `SPINDLE_CENTRE` through-hole at (0, 0); `FIXING_CENTRES` bolt-through holes at (0, +65) and (0, −135). One file for LH and RH.
-- Edge: `FACEPLATE_MORTISE` 25.50 × 60.34 R2 (faceplate 25.30 × 60.14 + 0.1); `FACEPLATE_SCREWS` (0, ±22.5); `BORE_CENTRE` for the Ø26 bore, ≥ 80 deep (77 case).
+- Edge: `FACEPLATE_MORTISE` 25.50 × 60.34 R2 (faceplate 25.30 × 60.14 + 0.1); `FACEPLATE_SCREWS` (0, ±22.5); `BORE_CENTRE` for the Ø25 bore (Windsor spec, narrower than the 25.30 faceplate), ≥ 80 deep (77 case).
 - Latch: Windsor 1172 heavy sprung tubular latch, 57 mm backset.
 
 ![8427 passage](Passage/Nido-Passage-8427.png)
