@@ -24,7 +24,8 @@ Layers:
 Also writes door-face layouts Nido-Dummy-Door-LH.dxf / -RH.dxf (spindle at the
 origin, backplate vertical, +Y up): RECESS rotated so the notch points away from
 the lever, POINTs for the two backplate screws (65 above, 137 below the spindle;
-measured off a ruler photo) and the spindle centre. LH = hinges on the left,
+measured off a ruler photo; PILOT_CENTRES), the round plate's three screws
+(PLATE_PILOT_CENTRES) and the spindle centre. LH = hinges on the left,
 lever pointing left, as seen from the face being machined.
 """
 import argparse
@@ -201,6 +202,7 @@ def build_door(out, hand, clearance=0.2):
     doc.header["$PDSIZE"] = 2.0
     doc.layers.add("RECESS", color=4)
     doc.layers.add("PILOT_CENTRES", color=3)
+    doc.layers.add("PLATE_PILOT_CENTRES", color=2)
     doc.layers.add("SPINDLE_CENTRE", color=1)
     doc.layers.add("REFERENCE", color=8, linetype="DASHED")
     msp = doc.modelspace()
@@ -209,12 +211,15 @@ def build_door(out, hand, clearance=0.2):
     pilots = [(0.0, PILOT_NEAR), (0.0, PILOT_NEAR - PILOT_SPACING)]
     for p in pilots:
         msp.add_point(p, dxfattribs={"layer": "PILOT_CENTRES"})
+    plate_pilots = [(round(x, 6) + 0.0, round(y, 6) + 0.0) for x, y, _ in rotate([(hx, hy, 0) for hx, hy in holes], turn)]
+    for p in plate_pilots:
+        msp.add_point(p, dxfattribs={"layer": "PLATE_PILOT_CENTRES"})
     msp.add_point((0, 0), dxfattribs={"layer": "SPINDLE_CENTRE"})
     msp.add_lwpolyline(rotate(outline, turn), format="xyb", close=True,
                        dxfattribs={"layer": "REFERENCE"})  # true plate outline, not for cutting
     msp.add_line((0, pilots[1][1]), (0, pilots[0][1]), dxfattribs={"layer": "REFERENCE"})
     doc.saveas(out)
-    return pilots
+    return pilots, plate_pilots
 
 
 if __name__ == "__main__":
@@ -228,8 +233,8 @@ if __name__ == "__main__":
     print(f"wrote {out}  (RECESS clearance {args.clearance} mm)")
     for hand in ("LH", "RH"):
         door = out.with_name(f"Nido-Dummy-Door-{hand}.dxf")
-        pts = build_door(door, hand, args.clearance)
-        print(f"wrote {door}  pilots {pts}")
+        pts, plate_pts = build_door(door, hand, args.clearance)
+        print(f"wrote {door}  backplate pilots {pts}  round-plate pilots {plate_pts}")
     print(f"  shoulder fillet R{RF:.3f}, ear tips (+/-{x_tip:.3f}, {y_tip:.3f}), "
           f"flats y {y_flat_bot:.3f}..{y_flat_top:.3f}")
     for x, y in holes:
