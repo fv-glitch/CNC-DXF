@@ -8,6 +8,10 @@ Door-face layout, units mm, spindle centre at the origin, longplate vertical (+Y
 Same longplate as the 8423 dummy set: fixings 65 above and 135 below the spindle
 (200 c-c, proven on a test door with the dummy set).
 
+Latch: Windsor 1172 heavy sprung tubular latch, 57 mm backset (door edge to
+spindle centre), 77 mm case, 25 mm drill-out (Windsor/retailer listings).
+Plates 230 x 40 x 7 mm. No round plate behind the plates on this set.
+
 All holes sit on the vertical centreline and go through the door (split spindle
 through the latch, bolt-through fixings joining the two plates), so the same file
 works for left- and right-hand doors.
