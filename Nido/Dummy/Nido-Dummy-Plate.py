@@ -198,11 +198,11 @@ def build_door(out, hand, clearance=0.2):
     doc = ezdxf.new("R2000", setup=True)
     doc.units = ezdxf.units.MM
     doc.header["$MEASUREMENT"] = 1
-    doc.header["$PDMODE"] = 3
-    doc.header["$PDSIZE"] = 2.0
+    doc.header["$PDMODE"] = 3     # same point style as Nido-Dummy-Plate.dxf
+    doc.header["$PDSIZE"] = 0.8
     doc.layers.add("RECESS", color=4)
     doc.layers.add("PILOT_CENTRES", color=3)
-    doc.layers.add("PLATE_PILOT_CENTRES", color=2)
+    doc.layers.add("PLATE_PILOT_CENTRES", color=3)
     doc.layers.add("SPINDLE_CENTRE", color=1)
     doc.layers.add("REFERENCE", color=8, linetype="DASHED")
     msp = doc.modelspace()
