@@ -20,6 +20,12 @@ Layers:
     HOLES         screw hole circles
     HOLE_CENTRES  POINT at the centre of each screw hole (for drilling ops)
     REFERENCE     hub ring and spindle centre cross, not for cutting
+
+Also writes door-face layouts Nido-Dummy-Door-LH.dxf / -RH.dxf (spindle at the
+origin, backplate vertical, +Y up): RECESS rotated so the notch points away from
+the lever, POINTs for the two backplate screws (65 above, 137 below the spindle;
+measured off a ruler photo) and the spindle centre. LH = hinges on the left,
+lever pointing left, as seen from the face being machined.
 """
 import argparse
 import math
@@ -170,6 +176,47 @@ def build(out, clearance=0.2):
     doc.saveas(out)
 
 
+# ---- long backplate, as fitted on the door (measured off a ruler photo) ----
+PILOT_NEAR = 65.0    # spindle centre -> nearer backplate screw (fitted ABOVE the spindle)
+PILOT_SPACING = 202.0  # backplate screw centre -> centre; the other is 137 below the spindle
+
+
+def rotate(v, deg):
+    """Rotate (x, y, bulge) vertices about the origin; bulges are unchanged."""
+    t = math.radians(deg)
+    c, s = math.cos(t), math.sin(t)
+    return [(x * c - y * s, x * s + y * c, b) for x, y, b in v]
+
+
+def build_door(out, hand, clearance=0.2):
+    """Door-face layout: spindle at the origin, backplate vertical (+Y up), viewed
+    from the face being machined. LH = hinges on the left, lever points left, so
+    the plate's notch (which points away from the lever) points right; RH mirrors it.
+    """
+    turn = -90.0 if hand == "LH" else 90.0  # plate notch is +Y in plate coordinates
+    doc = ezdxf.new("R2000", setup=True)
+    doc.units = ezdxf.units.MM
+    doc.header["$MEASUREMENT"] = 1
+    doc.header["$PDMODE"] = 3
+    doc.header["$PDSIZE"] = 2.0
+    doc.layers.add("RECESS", color=4)
+    doc.layers.add("PILOT_CENTRES", color=3)
+    doc.layers.add("SPINDLE_CENTRE", color=1)
+    doc.layers.add("REFERENCE", color=8, linetype="DASHED")
+    msp = doc.modelspace()
+    msp.add_lwpolyline(rotate(recess_profile(clearance), turn), format="xyb",
+                       close=True, dxfattribs={"layer": "RECESS"})
+    pilots = [(0.0, PILOT_NEAR), (0.0, PILOT_NEAR - PILOT_SPACING)]
+    for p in pilots:
+        msp.add_point(p, dxfattribs={"layer": "PILOT_CENTRES"})
+    msp.add_point((0, 0), dxfattribs={"layer": "SPINDLE_CENTRE"})
+    msp.add_lwpolyline(rotate(outline, turn), format="xyb", close=True,
+                       dxfattribs={"layer": "REFERENCE"})  # true plate outline, not for cutting
+    msp.add_line((0, pilots[1][1]), (0, pilots[0][1]), dxfattribs={"layer": "REFERENCE"})
+    doc.saveas(out)
+    return pilots
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("out", nargs="?", default=str(Path(__file__).with_suffix(".dxf")))
@@ -179,6 +226,10 @@ if __name__ == "__main__":
     out = Path(args.out)
     build(out, args.clearance)
     print(f"wrote {out}  (RECESS clearance {args.clearance} mm)")
+    for hand in ("LH", "RH"):
+        door = out.with_name(f"Nido-Dummy-Door-{hand}.dxf")
+        pts = build_door(door, hand, args.clearance)
+        print(f"wrote {door}  pilots {pts}")
     print(f"  shoulder fillet R{RF:.3f}, ear tips (+/-{x_tip:.3f}, {y_tip:.3f}), "
           f"flats y {y_flat_bot:.3f}..{y_flat_top:.3f}")
     for x, y in holes:
