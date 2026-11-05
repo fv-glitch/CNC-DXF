@@ -18,7 +18,7 @@ Layers:
     RECESS        outline + clearance with sharp notch shoulders; cut this with
                   the tool INSIDE (pocket/recess the plate drops into), any tool size
     HOLES         screw hole circles
-    HOLE_CENTRES  POINT at the centre of each screw hole (for drilling ops)
+    PLATE_PILOT_CENTRES  POINT at the centre of each screw hole (pilot drilling)
     REFERENCE     hub ring and spindle centre cross, not for cutting
 
 Also writes door-face layouts Nido-Dummy-Door-LH.dxf / -RH.dxf (spindle at the
@@ -160,7 +160,7 @@ def build(out, clearance=0.2):
     doc.layers.add("OUTLINE", color=7)
     doc.layers.add("RECESS", color=4)
     doc.layers.add("HOLES", color=1)
-    doc.layers.add("HOLE_CENTRES", color=3)
+    doc.layers.add("PLATE_PILOT_CENTRES", color=3)
     doc.layers.add("REFERENCE", color=8, linetype="DASHED")
     msp = doc.modelspace()
 
@@ -170,7 +170,7 @@ def build(out, clearance=0.2):
                        close=True, dxfattribs={"layer": "RECESS"})
     for c in holes:
         msp.add_circle(c, HOLE_D / 2, dxfattribs={"layer": "HOLES"})
-        msp.add_point(c, dxfattribs={"layer": "HOLE_CENTRES"})
+        msp.add_point(c, dxfattribs={"layer": "PLATE_PILOT_CENTRES"})
     msp.add_circle((0, 0), BOSS_D / 2, dxfattribs={"layer": "REFERENCE"})
     msp.add_line((-2, 0), (2, 0), dxfattribs={"layer": "REFERENCE"})
     msp.add_line((0, -2), (0, 2), dxfattribs={"layer": "REFERENCE"})
